@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.cryptoassignment.ui.currency.CurrencyListViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/clearDbBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clear DB" />
+
+        <Button
+            android:id="@+id/createDbBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create DB" />
+
+        <Button
+            android:id="@+id/showCryptoBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show Crypto" />
+
+        <Button
+            android:id="@+id/showFiatBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show Fiat Currency" />
+
+        <Button
+            android:id="@+id/showAllCurrencyBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show All Currency" />
+
+    </LinearLayout>
+
+</layout>
