@@ -57,6 +57,10 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     val room_version = "2.4.0"
+    val dagger_version = "1"
+
+    // deps.xxx.dagger2 = androidx.room:room-runtime:$room_version
+
 
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")

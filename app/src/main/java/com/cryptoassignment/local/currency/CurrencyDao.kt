@@ -11,7 +11,7 @@ interface CurrencyDao {
     @Query(
         "SELECT * FROM currencies " +
                 "WHERE type IN (:types) " +
-                "AND (name LIKE '% %' || :searchKeyWords " +
+                "AND (name LIKE '% %' || :searchKeyWords || '%' " +
                 "OR symbol LIKE :searchKeyWords || '%' " +
                 "OR name LIKE :searchKeyWords || '%')" +
                 "ORDER BY name ASC"

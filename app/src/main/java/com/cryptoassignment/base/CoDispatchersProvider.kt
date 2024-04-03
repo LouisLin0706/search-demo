@@ -19,7 +19,7 @@ open class AppCoDispatcherProvider @Inject constructor() : CoDispatcherProvider 
 }
 
 class TestCoDispatcherProvider : AppCoDispatcherProvider() {
-    override val main: CoroutineDispatcher = Dispatchers.Unconfined
+    override val main: CoroutineDispatcher = Dispatchers.Default
     override val mainImmediate: CoroutineDispatcher = Dispatchers.Unconfined
     override val computation: CoroutineDispatcher = Dispatchers.Unconfined
     override val io: CoroutineDispatcher = Dispatchers.Unconfined

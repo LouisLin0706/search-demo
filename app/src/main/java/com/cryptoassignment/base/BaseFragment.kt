@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import java.lang.ref.SoftReference
+import java.lang.ref.WeakReference
 
 abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
