@@ -54,14 +54,9 @@ import com.cryptoassignment.ui.currency.CurrencyUIModel
 internal fun CurrencyListScreen(
     viewModel: CurrencyListViewModel = hiltViewModel()
 ) {
-
-    val searchQuery by viewModel.searchText.collectAsState("")
-    val items by viewModel.currencyList.collectAsState(emptyList())
-    val isSearchResultEmpty by viewModel.isSearchResultEmpty.collectAsState(false)
+    val state by viewModel.state.collectAsState(CurrencyListViewModel.CurrencyListState())
     Content(
-        searchQuery = searchQuery,
-        items = items,
-        isSearchResultEmpty = isSearchResultEmpty,
+        state,
         search = { viewModel.search(it) }
     )
 }
@@ -70,28 +65,31 @@ internal fun CurrencyListScreen(
 @Preview(showBackground = true, name = "Currency List Screen")
 @Composable
 private fun Content(
-    searchQuery: String = "test",
-    items: List<CurrencyUIModel> = listOf(
-        CurrencyUIModel(
-            id = "1",
-            name = "Bitcoin",
-            symbol = "BTC",
-            iconText = "B"
-        ),
-        CurrencyUIModel(
-            id = "2",
-            name = "Ethereum",
-            symbol = "ETH",
-            iconText = "E"
-        ),
-        CurrencyUIModel(
-            id = "3",
-            name = "Ripple",
-            symbol = "XRP",
-            iconText = "R"
+    state: CurrencyListViewModel.CurrencyListState = CurrencyListViewModel.CurrencyListState(
+        search = "test",
+        isSearchResultEmpty = false,
+        isLoading = false,
+        results = listOf(
+            CurrencyUIModel(
+                id = "1",
+                name = "Bitcoin",
+                symbol = "BTC",
+                iconText = "B"
+            ),
+            CurrencyUIModel(
+                id = "2",
+                name = "Ethereum",
+                symbol = "ETH",
+                iconText = "E"
+            ),
+            CurrencyUIModel(
+                id = "3",
+                name = "Ripple",
+                symbol = "XRP",
+                iconText = "R"
+            )
         )
     ),
-    isSearchResultEmpty: Boolean = false,
     search: (String) -> Unit = {}
 ) {
 
@@ -102,21 +100,32 @@ private fun Content(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        SearchInputField(searchQuery) {
+        SearchInputField(state.search) {
             search(it)
         }
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
-                isSearchResultEmpty -> Text("Search nothing")
-                else -> LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(items) { item ->
-                        CurrencyItem(item)
-                    }
+        SearchResultBox(
+            isSearchResultEmpty = state.isSearchResultEmpty,
+            items = state.results
+        )
+    }
+}
+
+
+@Composable
+fun SearchResultBox(
+    isSearchResultEmpty: Boolean,
+    items: List<CurrencyUIModel>
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isSearchResultEmpty) {
+            Text("Search nothing")
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(items, key = { it.id }) { item ->
+                    CurrencyItem(item)
                 }
             }
         }

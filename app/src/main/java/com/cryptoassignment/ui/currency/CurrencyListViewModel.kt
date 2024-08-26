@@ -8,6 +8,7 @@ import com.cryptoassignment.data.repo.currency.CurrencyRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -25,6 +26,13 @@ class CurrencyListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+
+    data class CurrencyListState(
+        val search: String = "",
+        val isSearchResultEmpty: Boolean = false,
+        val isLoading: Boolean = false,
+        val results: List<CurrencyUIModel> = emptyList()
+    )
 
     private val params = savedStateHandle.get<CurrencyListFragment.Params>("params")
     val searchText = MutableStateFlow("")
@@ -60,6 +68,23 @@ class CurrencyListViewModel @Inject constructor(
             initialValue = false
         )
 
+
+    val state: Flow<CurrencyListState> = combine(
+        currencyList,
+        isSearchResultEmpty,
+        searchText,
+    ) { list, isSearchResultEmpty, search ->
+        CurrencyListState(
+            search = search,
+            isSearchResultEmpty = isSearchResultEmpty,
+            isLoading = false,
+            results = list
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = CurrencyListState()
+    )
 
     fun search(newText: String) {
         searchText.tryEmit(newText)
