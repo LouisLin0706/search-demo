@@ -1,106 +1,102 @@
-## Search Demo
+# Search Demo
+
 <p align="center">
 <img src="intro_1.png" width="200"/> <img src="intro_2.png" width="200"/> <img src="intro_3.png" width="200"/>
 </p>
 
-## Overall check list
-- [x] The [CurrencyListFragment](app/src/main/java/com/cryptoassignment/ui/currency/CurrencyListFragment.kt)  is expected to receive an ArrayList of CurrencyInfo
-  objects to create the UI.
-- [x] The [DemoActivity](app/src/main/java/com/cryptoassignment/ui/demo/DemoActivity.kt) should provide two datasets, Currency List A and Currency List B,
-  which contain CurrencyInfo objects to be queried from the local database.
-- [x] The DemoActivity should also include five buttons for demonstrating various
-  functionalities: [DemoControlPanelFragment](/app/src/main/java/com/cryptoassignment/ui/demo/DemoControlPanelFragment.kt)
-    - [x] The first button is responsible for clearing the data in the local database.
-    - [x] The second button is used to insert the data into the local database.
-    - [x] The third button changes the CurrencyListFragment to use Currency List A -
-      Crypto.
-    - [x] The fourth button changes the CurrencyListFragment to use Currency List B -
-      Fiat.
-    - [x] The fifth button displays all CurrencyInfo objects that can be purchased from
-      Currency List A and B.
-- [x] Additionally, the CurrencyListFragment should provide a search feature that can be
-  cancelled when the user clicks the back or close button.
-- [x] Furthermore, the CurrencyListFragment should include an empty view for displaying
-  an empty list.
-- [x] Lastly, it is crucial that all IO operations, including database or network access, are
-  not performed on the UI Thread to ensure smooth execution.
+## Overall Checklist
+
+- [x] The **CurrencyListFragment** ([CurrencyListFragment.kt](app/src/main/java/com/cryptoassignment/ui/currency/CurrencyListFragment.kt)) is expected to receive an `ArrayList` of `CurrencyInfo` objects to create the UI.
+- [x] The **DemoActivity** ([DemoActivity.kt](app/src/main/java/com/cryptoassignment/ui/demo/DemoActivity.kt)) should provide two datasets, **Currency List A** and **Currency List B**, which contain `CurrencyInfo` objects to be queried from the local database.
+- [x] The **DemoActivity** should include five buttons for demonstrating various functionalities in the **DemoControlPanelFragment** ([DemoControlPanelFragment.kt](app/src/main/java/com/cryptoassignment/ui/demo/DemoControlPanelFragment.kt)):
+    - [x] The first button clears the data in the local database.
+    - [x] The second button inserts data into the local database.
+    - [x] The third button changes the **CurrencyListFragment** to use **Currency List A** - Crypto.
+    - [x] The fourth button changes the **CurrencyListFragment** to use **Currency List B** - Fiat.
+    - [x] The fifth button displays all `CurrencyInfo` objects that can be purchased from **Currency List A** and **B**.
+- [x] The **CurrencyListFragment** provides a search feature that can be canceled when the user clicks the back or close button.
+- [x] The **CurrencyListFragment** includes an empty view for displaying when the list is empty.
+- [x] All IO operations, including database or network access, are not performed on the UI thread to ensure smooth execution.
 
 ## Assignment Overview
 
-There is only one module ([app](app)) without any modularization setup as the requirement
-is less at this level. but overall split into three levels below for the future.
-- Single module setup with clear package naming (We are here)
-    - base: common tools or base impl
-    - data: raw data from remote / local
-    - ui: app page
-    - di: dependency injection set up
+Currently, there is only one module ([app](app)) without any modularization setup, as the requirements are minimal at this stage. However, the project is structured into three levels for future scalability:
 
-- Modularization (future plan)
+- **Single Module Setup**:
+    - **base**: Common tools or base implementations.
+    - **data**: Raw data from remote/local sources.
+    - **ui**: Application pages.
+    - **di**: Dependency injection setup.
 
-  Moving into this level when reach those conditions below.
-    - Production level.
-    - More than 10 dev work in this project.
-    - The project age will be more than 2 years.
+- **Modularization** (Future Plan):
+    - Transition to this level when the following conditions are met:
+        - Production level.
+        - More than 10 developers working on this project.
+        - The project is older than 2 years.
+    - **Structure**:
+        - **mobile**: Application with Dagger injection management.
+        - **modules-core**: Basic core shared across all modules, including network and storage handling.
+        - **modules-ui**: Components related to user interface display.
+            - **core**: Base presenter, base activity & fragment if needed.
+            - **feature-A**
+            - **feature-B**
 
-  Solution:
-    - mobile : application with dagger injection management
-    - modules-core : basic core could share all module use. It also contains network & store handle
-    - modules-ui : basically anything relate to screen show to user will put in this
-        - core : base presenter, base activity & fragment if it needed etc..
-        - feature-B
-        - feature-A
-
-- Single Activity approach (future plan)
-
-  Having only one MainActivity with multiple fragments in order to have better management such like global message reminder.
+- **Single Activity Approach** (Future Plan):
+    - Utilize a single `MainActivity` with multiple fragments for better management, such as global message reminders.
 
 ## Local Data
-- app/data/repo/currency :`CurrencyRepo`
-    - Response for data converter & local data set
 
-    
-## Unit / UI test
-- Database query test: [CurrencyDaoTest](app/src/androidTest/java/com/cryptoassignment/local/localcurrency/CurrencyDaoTest.kt)
+- **Currency Repository**:
+    - Located at `app/data/repo/currency`: `CurrencyRepo`
+        - Responsible for data conversion and local data management.
+
+## Unit / UI Tests
+
+- **Database Query Test**: [CurrencyDaoTest](app/src/androidTest/java/com/cryptoassignment/local/localcurrency/CurrencyDaoTest.kt)
     - [x] A coin will match if:
-      The coin’s name (e.g. Bitcoin) starts with the search term
-        - Example 1: Query: `foo`
-            - Matches these coin names: Foobar
-            - Does not match: Barfoo
-        - Example 2: Query: `Ethereum`
-            - Matches these coin names: Ethereum, Ethereum Classic
-            - Does not match: -
-- OR -
-    - [x]  The coin’s name contains a partial match with a ‘ ’ (space) prefixed to the search term
-      - Example: Query: `Classic`
-          - Matches these coin names: Ethereum Classic
-          - Does not match: Tronclassic
+        - The coin’s name (e.g., Bitcoin) starts with the search term.
+            - Example 1: Query: `foo`
+                - Matches: Foobar
+                - Does not match: Barfoo
+            - Example 2: Query: `Ethereum`
+                - Matches: Ethereum, Ethereum Classic
+                - Does not match: -
     - OR -
-      - The coin’s symbol starts with the search term
+        - The coin’s name contains a partial match with a space prefixed to the search term.
+            - Example: Query: `Classic`
+                - Matches: Ethereum Classic
+                - Does not match: Tronclassic
+        - OR -
+            - The coin’s symbol starts with the search term.
                 - Example: Query: `ET`
-                    - Matches these symbols:
+                    - Matches these symbols.
 
-- [CurrencyRepoImplTest](app/src/test/java/com/cryptoassignment/data/repo/currency/CurrencyRepoImplTest.kt)
-- [CurrencyListViewModelTest](app/src/test/java/com/cryptoassignment/ui/currency/CurrencyListViewModelTest.kt)
+- Additional Tests:
+    - [CurrencyRepoImplTest](app/src/test/java/com/cryptoassignment/data/repo/currency/CurrencyRepoImplTest.kt)
+    - [CurrencyListViewModelTest](app/src/test/java/com/cryptoassignment/ui/currency/CurrencyListViewModelTest.kt)
 
 ## Considerations
-- Error handling
-- Maybe there is a A/B testing for search conditions that want to make it dynamic for the sql query. 
-  - It would probability need to wrap the sql query text out & being able to pass in DAO with different combination.
-  - SimpleSQLiteQuery to manage different search conditions maybe also is another direction. 
-- Constant key definition
-- Leakcanary & Crashlytics
-- Lint check
-- Design component: At least we can define text style base on the current requirement
-- Consider having an UseCase pattern if we have more complex core business logic
-- CI / CD set up
-- Landscape design
-- More unit test 
 
-## Tech usage
-- Arch : MVVM (Clean Arch)
-- DI : Dagger Hilt
-- Code language : Kotlin
-- Design Patterns: Repository pattern
+- Implement error handling.
+- Consider A/B testing for search conditions to make SQL queries dynamic.
+    - This may require wrapping SQL query text and allowing different combinations to be passed to DAO.
+    - Using `SimpleSQLiteQuery` to manage different search conditions could also be a viable approach.
+- Define constant keys.
+- Integrate LeakCanary & Crashlytics for monitoring.
+- Conduct lint checks.
+- Establish design components: Define text styles based on current requirements.
+- Consider implementing a UseCase pattern if more complex business logic is needed.
+- Set up CI/CD pipelines.
+- Ensure landscape design compatibility.
+- Increase unit test coverage.
 
-## Reference
-[(Search demo)](challenge.pdf)
+## Tech Stack
+
+- **Architecture**: MVVM (Clean Architecture)
+- **Dependency Injection**: Dagger Hilt
+- **Programming Language**: Kotlin
+- **Design Patterns**: Repository Pattern
+
+## References
+
+- [Search Demo Documentation](challenge.pdf)
