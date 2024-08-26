@@ -20,29 +20,24 @@
 
 ## Assignment Overview
 
-Currently, there is only one module ([app](app)) without any modularization setup, as the requirements are minimal at this stage. However, the project is structured into three levels for future scalability:
+The existing codebase remains unchanged, but improvements have been made by introducing Jetpack Compose:
 
-- **Single Module Setup**:
-    - **base**: Common tools or base implementations.
-    - **data**: Raw data from remote/local sources.
-    - **ui**: Application pages.
-    - **di**: Dependency injection setup.
+## **🚀 Jetpack Compose Improvements**
 
-- **Modularization** (Future Plan):
-    - Transition to this level when the following conditions are met:
-        - Production level.
-        - More than 10 developers working on this project.
-        - The project is older than 2 years.
-    - **Structure**:
-        - **mobile**: Application with Dagger injection management.
-        - **modules-core**: Basic core shared across all modules, including network and storage handling.
-        - **modules-ui**: Components related to user interface display.
-            - **core**: Base presenter, base activity & fragment if needed.
-            - **feature-A**
-            - **feature-B**
+Instead of revamping the whole app structure from the root node, the existing code has been migrated to Jetpack Compose with minimal impact. We are essentially adding two screens as Compose:
 
-- **Single Activity Approach** (Future Plan):
-    - Utilize a single `MainActivity` with multiple fragments for better management, such as global message reminders.
+- **CurrencyListFragment2**: Host of the Compose, **CurrencyListScreen**: Content.
+- **DemoControlPanel2Fragment**: Host of Compose, **DemoControlPanelScreen**: Content.
+
+### **Key Practices Implemented:**
+- **Imperative MVI**: A Model-View-Intent architecture is used to manage state and actions.
+- **Preview**: Composable previews are utilized for UI testing and visualization.
+- **Pure Composable Functions**: The use of pure composable functions for better reusability and testing.
+
+## **TODO**
+- **Testing on Compose**: Implement unit and UI tests for the new composables.
+- **Revamp the whole structure** to not rely on fragments; allow Compose to manage navigation.
+
 
 ## Local Data
 
@@ -54,7 +49,7 @@ Currently, there is only one module ([app](app)) without any modularization setu
 
 - **Database Query Test**: [CurrencyDaoTest](app/src/androidTest/java/com/cryptoassignment/local/localcurrency/CurrencyDaoTest.kt)
     - [x] A coin will match if:
-        - The coin’s name (e.g., Bitcoin) starts with the search term.
+        - The coin's name (e.g., Bitcoin) starts with the search term.
             - Example 1: Query: `foo`
                 - Matches: Foobar
                 - Does not match: Barfoo
@@ -62,12 +57,12 @@ Currently, there is only one module ([app](app)) without any modularization setu
                 - Matches: Ethereum, Ethereum Classic
                 - Does not match: -
     - OR -
-        - The coin’s name contains a partial match with a space prefixed to the search term.
+        - The coin's name contains a partial match with a space prefixed to the search term.
             - Example: Query: `Classic`
                 - Matches: Ethereum Classic
                 - Does not match: Tronclassic
         - OR -
-            - The coin’s symbol starts with the search term.
+            - The coin's symbol starts with the search term.
                 - Example: Query: `ET`
                     - Matches these symbols.
 
