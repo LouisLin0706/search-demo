@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -34,11 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,7 +72,7 @@ private fun Content(
     state: CurrencyListViewModel.CurrencyListState = CurrencyListViewModel.CurrencyListState(
         search = "test",
         isSearchResultEmpty = false,
-        isLoading = false,
+        isLoading = true,
         results = listOf(
             CurrencyUIModel(
                 id = "1",
@@ -96,7 +100,7 @@ private fun Content(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(12.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
@@ -105,7 +109,8 @@ private fun Content(
         }
         SearchResultBox(
             isSearchResultEmpty = state.isSearchResultEmpty,
-            items = state.results
+            items = state.results,
+            isLoading = state.isLoading
         )
     }
 }
@@ -113,6 +118,7 @@ private fun Content(
 
 @Composable
 fun SearchResultBox(
+    isLoading: Boolean,
     isSearchResultEmpty: Boolean,
     items: List<CurrencyUIModel>
 ) {
@@ -129,9 +135,29 @@ fun SearchResultBox(
                 }
             }
         }
+
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(), // Semi-transparent background
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = Color.Blue, // Set your desired color
+                    modifier = Modifier.size(48.dp) // Optional: set size
+                )
+            }
+        }
     }
 }
 
+@Preview(showBackground = true, name = "Search Input Field")
+@Composable
+fun PreViewSearchInputField() {
+    SearchInputField(query = "") {
+
+    }
+}
 
 @Composable
 fun SearchInputField(

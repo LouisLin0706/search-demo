@@ -8,6 +8,7 @@ import com.cryptoassignment.data.repo.currency.CurrencyRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
@@ -50,14 +52,21 @@ class CurrencyListViewModel @Inject constructor(
     ) { search, type ->
         search to type
     }
+        .onEach {
+            _isLoading.value = true
+        }
         .debounce(300)
         .flatMapLatest { (searchText, type) ->
             currencyRepo.getCurrencyList(searchText, type)
                 .map { it ->
                     it.map { it.toUIModel() }
+                }.onEach {
+                    _isLoading.value = false
                 }
         }
 
+
+    private val _isLoading = MutableStateFlow(false)
 
     val isSearchResultEmpty = combine(currencyList, searchText) { list, search ->
         list.isEmpty() && search.isNotEmpty()
@@ -73,11 +82,12 @@ class CurrencyListViewModel @Inject constructor(
         currencyList,
         isSearchResultEmpty,
         searchText,
-    ) { list, isSearchResultEmpty, search ->
+        _isLoading,
+    ) { list, isSearchResultEmpty, search, isLoading ->
         CurrencyListState(
             search = search,
             isSearchResultEmpty = isSearchResultEmpty,
-            isLoading = false,
+            isLoading = isLoading,
             results = list
         )
     }.stateIn(
