@@ -7,18 +7,28 @@
 
     <fragment
         android:id="@+id/demoPanelFragment"
-        android:name="com.cryptoassignment.ui.demo.DemoControlPanelFragment"
-        tools:layout="@layout/fragment_demo_control_panel">
+        android:name="com.cryptoassignment.ui.demo.compose.DemoControlPanel2Fragment"
+        tools:layout="@layout/fragment_demo_control_panel_2">
 
         <action
             android:id="@+id/action_demoPanelFragment_to_currencyListFragment"
             app:destination="@id/currencyListFragment" />
+        <action
+            android:id="@+id/action_demoPanelFragment_to_currencyListFragment2"
+            app:destination="@id/currencyListFragment2" />
 
     </fragment>
     <fragment
         android:id="@+id/currencyListFragment"
         android:name="com.cryptoassignment.ui.currency.CurrencyListFragment"
         tools:layout="@layout/fragment_currency_list" />
+
+
+    <fragment
+        android:id="@+id/currencyListFragment2"
+        android:name="com.cryptoassignment.ui.currency.compose.CurrencyList2Fragment"
+        tools:layout="@layout/fragment_currency_list_2" />
+
 
 
 </navigation>

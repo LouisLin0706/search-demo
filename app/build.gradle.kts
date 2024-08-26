@@ -93,6 +93,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8") // LiveData support
     implementation("androidx.compose.ui:ui-tooling:1.6.8") // Tooling support
     implementation("androidx.activity:activity-compose:1.7.0") // Activity Compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }
 
 kapt {

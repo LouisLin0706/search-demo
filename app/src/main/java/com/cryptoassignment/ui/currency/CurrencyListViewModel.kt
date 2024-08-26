@@ -59,6 +59,11 @@ class CurrencyListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = false
         )
+
+
+    fun search(newText: String) {
+        searchText.tryEmit(newText)
+    }
 }
 
 fun CurrencyModel.toUIModel() = CurrencyUIModel(
