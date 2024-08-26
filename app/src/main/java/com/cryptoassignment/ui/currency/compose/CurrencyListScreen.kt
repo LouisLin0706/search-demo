@@ -50,11 +50,51 @@ import com.cryptoassignment.ui.currency.CurrencyListViewModel
 import com.cryptoassignment.ui.currency.CurrencyUIModel
 
 
-@Preview
 @Composable
 internal fun CurrencyListScreen(
     viewModel: CurrencyListViewModel = hiltViewModel()
 ) {
+
+    val searchQuery by viewModel.searchText.collectAsState("")
+    val items by viewModel.currencyList.collectAsState(emptyList())
+    val isSearchResultEmpty by viewModel.isSearchResultEmpty.collectAsState(false)
+    Content(
+        searchQuery = searchQuery,
+        items = items,
+        isSearchResultEmpty = isSearchResultEmpty,
+        search = { viewModel.search(it) }
+    )
+}
+
+
+@Preview(showBackground = true, name = "Currency List Screen")
+@Composable
+private fun Content(
+    searchQuery: String = "test",
+    items: List<CurrencyUIModel> = listOf(
+        CurrencyUIModel(
+            id = "1",
+            name = "Bitcoin",
+            symbol = "BTC",
+            iconText = "B"
+        ),
+        CurrencyUIModel(
+            id = "2",
+            name = "Ethereum",
+            symbol = "ETH",
+            iconText = "E"
+        ),
+        CurrencyUIModel(
+            id = "3",
+            name = "Ripple",
+            symbol = "XRP",
+            iconText = "R"
+        )
+    ),
+    isSearchResultEmpty: Boolean = false,
+    search: (String) -> Unit = {}
+) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,10 +102,9 @@ internal fun CurrencyListScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        val searchQuery by viewModel.searchText.collectAsState("")
-        val items by viewModel.currencyList.collectAsState(emptyList())
-        val isSearchResultEmpty by viewModel.isSearchResultEmpty.collectAsState(false)
-        SearchInputField(searchQuery, viewModel)
+        SearchInputField(searchQuery) {
+            search(it)
+        }
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -82,12 +121,14 @@ internal fun CurrencyListScreen(
             }
         }
     }
-
 }
 
 
 @Composable
-fun SearchInputField(query: String, viewModel: CurrencyListViewModel) {
+fun SearchInputField(
+    query: String,
+    onValueChange: (String) -> Unit
+) {
     var isFocused by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -123,7 +164,7 @@ fun SearchInputField(query: String, viewModel: CurrencyListViewModel) {
         TextField(
             value = query,
             onValueChange = { newText ->
-                viewModel.search(newText)
+                onValueChange(newText)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,7 +189,7 @@ fun SearchInputField(query: String, viewModel: CurrencyListViewModel) {
 
         if (query.isNotEmpty()) {
             IconButton(
-                onClick = { viewModel.search("") },
+                onClick = { onValueChange("") },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 8.dp)

@@ -24,10 +24,9 @@ import com.cryptoassignment.local.currency.Type
 import com.cryptoassignment.ui.demo.DemoControlPanelViewModel
 
 
-@Preview
 @Composable
 internal fun DemoControlPanelScreen(
-    navController: NavController,
+    navController: NavController? = null,
     viewModel: DemoControlPanelViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -40,7 +39,7 @@ internal fun DemoControlPanelScreen(
     }
     LaunchedEffect(navigation) {
         navigation?.let {
-            navController.navigate(
+            navController?.navigate(
                 R.id.action_demoPanelFragment_to_currencyListFragment2,
                 args = bundleOf(
                     "params" to it
@@ -48,17 +47,32 @@ internal fun DemoControlPanelScreen(
             )
         }
     }
+    Content(
+        viewModel = viewModel
+    )
+}
+
+@Preview(showBackground = true, name = "DemoControlPanelScreen Preview")
+@Composable
+private fun Content(
+    viewModel: DemoControlPanelViewModel? = null
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        VerticalButton(text = "Clear DB") { viewModel.clearDBClicked() }
-        VerticalButton(text = "Create DB") { viewModel.createDBClicked() }
-        VerticalButton(text = "Show Crypto") { viewModel.showCurrencyList(Type.CRYPTO) }
-        VerticalButton(text = "Show Fiat Currency") { viewModel.showCurrencyList(Type.FIAT) }
-        VerticalButton(text = "Show All Currency") { viewModel.showCurrencyList(Type.CRYPTO, Type.FIAT) }
+        VerticalButton(text = "Clear DB") { viewModel?.clearDBClicked() }
+        VerticalButton(text = "Create DB") { viewModel?.createDBClicked() }
+        VerticalButton(text = "Show Crypto") { viewModel?.showCurrencyList(Type.CRYPTO) }
+        VerticalButton(text = "Show Fiat Currency") { viewModel?.showCurrencyList(Type.FIAT) }
+        VerticalButton(text = "Show All Currency") {
+            viewModel?.showCurrencyList(
+                Type.CRYPTO,
+                Type.FIAT
+            )
+        }
     }
 }
 
