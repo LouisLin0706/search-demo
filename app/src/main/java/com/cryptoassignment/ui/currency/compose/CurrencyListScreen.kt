@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -44,16 +45,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cryptoassignment.R
 import com.cryptoassignment.ui.currency.CurrencyListViewModel
 import com.cryptoassignment.ui.currency.CurrencyUIModel
+import kotlinx.collections.immutable.toImmutableList
 
 
 @Composable
 internal fun CurrencyListScreen(
     viewModel: CurrencyListViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState(CurrencyListViewModel.CurrencyListState())
+    val state by viewModel.state.collectAsStateWithLifecycle(CurrencyListViewModel.CurrencyListState())
     Content(
         { state },
         search = { viewModel.search(it) }
@@ -69,7 +72,7 @@ private fun Content(
             search = "test",
             isSearchResultEmpty = false,
             isLoading = true,
-            results = listOf(
+            results = mutableListOf<CurrencyUIModel>(
                 CurrencyUIModel(
                     id = "1",
                     name = "Bitcoin",
@@ -88,7 +91,7 @@ private fun Content(
                     symbol = "XRP",
                     iconText = "R"
                 )
-            )
+            ).toImmutableList()
         )
     },
     search: (String) -> Unit = {}
@@ -156,6 +159,7 @@ fun SearchInputField(
     var isFocused by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val textFieldState = remember { mutableStateOf(query()) }
 
     Box(
         modifier = Modifier
@@ -174,7 +178,7 @@ fun SearchInputField(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 } else {
-
+                    // no - op
                 }
             },
             modifier = Modifier.align(Alignment.CenterStart)
@@ -185,14 +189,15 @@ fun SearchInputField(
                 tint = Color.Gray
             )
         }
-        TextField(
-            value = query(),
+        BasicTextField(
+            value = textFieldState.value,
             onValueChange = { newText ->
+                textFieldState.value = newText
                 onValueChange(newText)
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp)
+                .padding(start = 48.dp, end = 48.dp)
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused // Update focus state
                 }
@@ -201,19 +206,26 @@ fun SearchInputField(
                 fontSize = 20.sp,
                 color = Color.Black
             ),
-
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(8.dp),
-            placeholder = { Text("Search...") }
+            decorationBox = { innerTextField ->
+                if (textFieldState.value.isEmpty()) {
+                    Text(
+                        text = "Search...",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
+                    )
+                }
+                innerTextField()
+            }
         )
 
-        if (query().isNotEmpty()) {
+        if (textFieldState.value.isNotEmpty()) {
             IconButton(
-                onClick = { onValueChange("") },
+                onClick = {
+                    textFieldState.value = ""
+                    onValueChange("")
+                },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 8.dp)

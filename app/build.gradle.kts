@@ -94,6 +94,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.6.8") // Tooling support
     implementation("androidx.activity:activity-compose:1.7.0") // Activity Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 }
 
 kapt {

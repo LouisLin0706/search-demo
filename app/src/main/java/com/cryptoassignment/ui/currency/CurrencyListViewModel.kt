@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.cryptoassignment.data.model.CurrencyModel
 import com.cryptoassignment.data.repo.currency.CurrencyRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -33,7 +35,7 @@ class CurrencyListViewModel @Inject constructor(
         val search: String = "",
         val isSearchResultEmpty: Boolean = false,
         val isLoading: Boolean = false,
-        val results: List<CurrencyUIModel> = emptyList()
+        val results: ImmutableList<CurrencyUIModel> = mutableListOf<CurrencyUIModel>().toImmutableList()
     )
 
     private val params = savedStateHandle.get<CurrencyListFragment.Params>("params")
@@ -73,7 +75,7 @@ class CurrencyListViewModel @Inject constructor(
     }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
         )
 
@@ -88,11 +90,11 @@ class CurrencyListViewModel @Inject constructor(
             search = search,
             isSearchResultEmpty = isSearchResultEmpty,
             isLoading = isLoading,
-            results = list
+            results = list.toMutableList().toImmutableList()
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = CurrencyListState()
     )
 

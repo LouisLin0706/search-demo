@@ -9,8 +9,11 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.cryptoassignment.R
 import com.cryptoassignment.local.currency.Type
@@ -26,52 +30,41 @@ import com.cryptoassignment.ui.demo.DemoControlPanelViewModel
 
 @Composable
 internal fun DemoControlPanelScreen(
-    navController: NavController? = null,
-    viewModel: DemoControlPanelViewModel = hiltViewModel()
+    viewModel: DemoControlPanelViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
-    val toastMessage by viewModel.toast.collectAsState(null)
-    val navigation by viewModel.navigation.collectAsState(null)
-    LaunchedEffect(toastMessage) {
-        toastMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
-    }
-    LaunchedEffect(navigation) {
-        navigation?.let {
-            navController?.navigate(
-                R.id.action_demoPanelFragment_to_currencyListFragment2,
-                args = bundleOf(
-                    "params" to it
-                )
-            )
-        }
-    }
-    Content { viewModel }
+    Content({
+        viewModel.clearDBClicked()
+    }, {
+        viewModel.createDBClicked()
+    }, {
+        viewModel.showCurrencyList(Type.CRYPTO)
+    }, {
+        viewModel.showCurrencyList(Type.FIAT)
+    }, {
+        viewModel.showCurrencyList(Type.CRYPTO, Type.FIAT)
+    })
 }
 
 @Preview(showBackground = true, name = "DemoControlPanelScreen Preview")
 @Composable
 private fun Content(
-    getViewModel: () -> DemoControlPanelViewModel? = { null}
+    onClearDBClicked: () -> Unit? = { null },
+    onCreateDBClicked: () -> Unit? = { null },
+    onShowCryptoDBClicked: () -> Unit? = { null },
+    onShowFiatCurrencyClicked: () -> Unit? = { null },
+    onShowAllCurrencyClicked: () -> Unit? = { null },
 ) {
-    val viewModel = getViewModel()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        VerticalButton(text = "Clear DB") { viewModel?.clearDBClicked() }
-        VerticalButton(text = "Create DB") { viewModel?.createDBClicked() }
-        VerticalButton(text = "Show Crypto") { viewModel?.showCurrencyList(Type.CRYPTO) }
-        VerticalButton(text = "Show Fiat Currency") { viewModel?.showCurrencyList(Type.FIAT) }
-        VerticalButton(text = "Show All Currency") {
-            viewModel?.showCurrencyList(
-                Type.CRYPTO,
-                Type.FIAT
-            )
-        }
+        VerticalButton(text = "Clear DB") { onClearDBClicked() }
+        VerticalButton(text = "Create DB") { onCreateDBClicked() }
+        VerticalButton(text = "Show Crypto") { onShowCryptoDBClicked() }
+        VerticalButton(text = "Show Fiat Currency") { onShowFiatCurrencyClicked() }
+        VerticalButton(text = "Show All Currency") { onShowAllCurrencyClicked() }
     }
 }
 
