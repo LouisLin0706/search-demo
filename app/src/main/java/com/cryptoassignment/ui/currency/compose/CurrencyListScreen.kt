@@ -8,18 +8,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -36,13 +34,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,7 +55,7 @@ internal fun CurrencyListScreen(
 ) {
     val state by viewModel.state.collectAsState(CurrencyListViewModel.CurrencyListState())
     Content(
-        state,
+        { state },
         search = { viewModel.search(it) }
     )
 }
@@ -69,31 +64,33 @@ internal fun CurrencyListScreen(
 @Preview(showBackground = true, name = "Currency List Screen")
 @Composable
 private fun Content(
-    state: CurrencyListViewModel.CurrencyListState = CurrencyListViewModel.CurrencyListState(
-        search = "test",
-        isSearchResultEmpty = false,
-        isLoading = true,
-        results = listOf(
-            CurrencyUIModel(
-                id = "1",
-                name = "Bitcoin",
-                symbol = "BTC",
-                iconText = "B"
-            ),
-            CurrencyUIModel(
-                id = "2",
-                name = "Ethereum",
-                symbol = "ETH",
-                iconText = "E"
-            ),
-            CurrencyUIModel(
-                id = "3",
-                name = "Ripple",
-                symbol = "XRP",
-                iconText = "R"
+    state: () -> CurrencyListViewModel.CurrencyListState = {
+        CurrencyListViewModel.CurrencyListState(
+            search = "test",
+            isSearchResultEmpty = false,
+            isLoading = true,
+            results = listOf(
+                CurrencyUIModel(
+                    id = "1",
+                    name = "Bitcoin",
+                    symbol = "BTC",
+                    iconText = "B"
+                ),
+                CurrencyUIModel(
+                    id = "2",
+                    name = "Ethereum",
+                    symbol = "ETH",
+                    iconText = "E"
+                ),
+                CurrencyUIModel(
+                    id = "3",
+                    name = "Ripple",
+                    symbol = "XRP",
+                    iconText = "R"
+                )
             )
         )
-    ),
+    },
     search: (String) -> Unit = {}
 ) {
 
@@ -104,39 +101,31 @@ private fun Content(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        SearchInputField(state.search) {
-            search(it)
-        }
-        SearchResultBox(
-            isSearchResultEmpty = state.isSearchResultEmpty,
-            items = state.results,
-            isLoading = state.isLoading
-        )
+        SearchInputField({ state().search }) { search(it) }
+        SearchResultBox { state() }
     }
 }
 
 
 @Composable
 fun SearchResultBox(
-    isLoading: Boolean,
-    isSearchResultEmpty: Boolean,
-    items: List<CurrencyUIModel>
+    state: () -> CurrencyListViewModel.CurrencyListState
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (isSearchResultEmpty) {
+        if (state().isSearchResultEmpty) {
             Text("Search nothing")
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(items, key = { it.id }) { item ->
+                items(state().results, key = { it.id }) { item ->
                     CurrencyItem(item)
                 }
             }
         }
 
-        if (isLoading) {
+        if (state().isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize(), // Semi-transparent background
@@ -154,14 +143,14 @@ fun SearchResultBox(
 @Preview(showBackground = true, name = "Search Input Field")
 @Composable
 fun PreViewSearchInputField() {
-    SearchInputField(query = "") {
+    SearchInputField(query = { "" }) {
 
     }
 }
 
 @Composable
 fun SearchInputField(
-    query: String,
+    query: () -> String,
     onValueChange: (String) -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -197,7 +186,7 @@ fun SearchInputField(
             )
         }
         TextField(
-            value = query,
+            value = query(),
             onValueChange = { newText ->
                 onValueChange(newText)
             },
@@ -222,7 +211,7 @@ fun SearchInputField(
             placeholder = { Text("Search...") }
         )
 
-        if (query.isNotEmpty()) {
+        if (query().isNotEmpty()) {
             IconButton(
                 onClick = { onValueChange("") },
                 modifier = Modifier

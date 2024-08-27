@@ -47,16 +47,15 @@ internal fun DemoControlPanelScreen(
             )
         }
     }
-    Content(
-        viewModel = viewModel
-    )
+    Content { viewModel }
 }
 
 @Preview(showBackground = true, name = "DemoControlPanelScreen Preview")
 @Composable
 private fun Content(
-    viewModel: DemoControlPanelViewModel? = null
+    getViewModel: () -> DemoControlPanelViewModel? = { null}
 ) {
+    val viewModel = getViewModel()
     Column(
         modifier = Modifier
             .fillMaxSize()
